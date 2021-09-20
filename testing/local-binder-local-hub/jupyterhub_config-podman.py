@@ -2,7 +2,7 @@
 ## A development config to test BinderHub locally with podman.
 #
 # Additional dependencies:
-# pip install git+https://github.com/manics/podmanspawner.git@podmancli
+# pip install podmanclispawner repo2podman
 #
 # Run `jupyterhub --config=jupyterhub_config-podman.py`
 
@@ -11,9 +11,6 @@ with open('jupyterhub_config.py') as f:
     exec(f.read())
 
 from binderhub.binderspawner_mixin import BinderSpawnerMixin
-
-# Using a modified version of PodmanSpawner:
-# https://github.com/manics/podmanspawner/tree/podmanremote
 from podmanclispawner import PodmanCLISpawner
 
 # image & token are set via spawn options
