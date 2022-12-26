@@ -62,6 +62,9 @@ if c.BinderHub.auth_enabled:
     if "base_url" in c.BinderHub:
         c.HubOAuth.base_url = c.BinderHub.base_url
 
+if get_value("repo2docker.configFile"):
+    c.KubernetesBuildExecutor.repo2docker_config = "repo2docker-config"
+
 # load extra config snippets
 for key, snippet in sorted((get_value("extraConfig") or {}).items()):
     print(f"Loading extra config: {key}")

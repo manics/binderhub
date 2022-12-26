@@ -40,6 +40,7 @@ required:
   - extraVolumeMounts
   - extraEnv
   - extraPodSpec
+  - repo2docker
   - podAnnotations
   - global
 properties:
@@ -619,6 +620,17 @@ properties:
       ```
 
       See [PodSpec](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PodSpec)
+
+  repo2docker:
+    type: object
+    additionalProperties: false
+    required: [configFile]
+    properties:
+      configFile:
+        type: string
+        description: |
+          Contents of a repo2docker configuration file that will be passed as the
+          `--config` argument to repo2docker.
 
   podAnnotations:
     type: object

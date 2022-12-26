@@ -1,0 +1,9 @@
+{{- with .Values.repo2docker.configFile }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: repo2docker-config
+data:
+  repo2docker_config.py: |
+    {{- . | nindent 4 }}
+{{- end }}

@@ -117,6 +117,12 @@ class BuildExecutor(LoggingConfigurable):
         config=True,
     )
 
+    repo2docker_config = Unicode(
+        "",
+        help="Implementation dependent repo2docker configuration file.",
+        config=True,
+    )
+
     builder_info = Dict(
         help=(
             "Metadata about the builder e.g. repo2docker version. "
@@ -361,6 +367,12 @@ class KubernetesBuildExecutor(BuildExecutor):
 
     _component_label = Unicode("binderhub-build")
 
+    def get_r2d_cmd_options(self):
+        r2d_options = super().get_r2d_cmd_options()
+        if self.repo2docker_config:
+            r2d_options.extend(["--config", "/etc/repo2docker/repo2docker_config.py"])
+        return r2d_options
+
     def get_affinity(self):
         """Determine the affinity term for the build pod.
 
@@ -458,6 +470,21 @@ class KubernetesBuildExecutor(BuildExecutor):
                 client.V1Volume(
                     name="docker-config",
                     secret=client.V1SecretVolumeSource(secret_name=self.push_secret),
+                )
+            )
+
+        if self.repo2docker_config:
+            volume_mounts.append(
+                client.V1VolumeMount(
+                    mount_path="/etc/repo2docker/", name="repo2docker-config"
+                )
+            )
+            volumes.append(
+                client.V1Volume(
+                    name="repo2docker-config",
+                    config_map=client.V1ConfigMapVolumeSource(
+                        name=self.repo2docker_config
+                    ),
                 )
             )
 
