@@ -25,15 +25,10 @@ spec:
       {{- with include "jupyterhub.imagePullSecrets" (dict "root" . "image" $daemonset.image) }}
       imagePullSecrets: {{ . }}
       {{- end }}
+      {{- with .Values.config.KubernetesBuildExecutor.tolerations }}
       tolerations:
-      - effect: NoSchedule
-        key: hub.jupyter.org/dedicated
-        operator: Equal
-        value: user
-      - effect: NoSchedule
-        key: hub.jupyter.org_dedicated
-        operator: Equal
-        value: user
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
       nodeSelector: {{ .Values.config.BinderHub.build_node_selector | toJson }}
 
       {{- with $builder.initContainers }}

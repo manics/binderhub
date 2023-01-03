@@ -48,7 +48,16 @@ config:
     # hub_url:
     # hub_url_local:
     use_registry: true
-  KubernetesBuildExecutor: {}
+  KubernetesBuildExecutor:
+    tolerations:
+      - effect: NoSchedule
+        key: hub.jupyter.org/dedicated
+        operator: Equal
+        value: user
+      - effect: NoSchedule
+        key: hub.jupyter.org_dedicated
+        operator: Equal
+        value: user
 
 extraConfig: {}
 

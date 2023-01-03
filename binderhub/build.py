@@ -329,6 +329,10 @@ class KubernetesBuildExecutor(BuildExecutor):
         {}, help="Node selector for the kubernetes build pod.", config=True
     )
 
+    tolerations = List(
+        [], help="Tolerations for the kubernetes build pod.", config=True
+    )
+
     extra_envs = Dict(
         {},
         help="Extra environment variables for the kubernetes build pod.",
@@ -522,22 +526,7 @@ class KubernetesBuildExecutor(BuildExecutor):
                         env=env,
                     )
                 ],
-                tolerations=[
-                    client.V1Toleration(
-                        key="hub.jupyter.org/dedicated",
-                        operator="Equal",
-                        value="user",
-                        effect="NoSchedule",
-                    ),
-                    # GKE currently does not permit creating taints on a node pool
-                    # with a `/` in the key field
-                    client.V1Toleration(
-                        key="hub.jupyter.org_dedicated",
-                        operator="Equal",
-                        value="user",
-                        effect="NoSchedule",
-                    ),
-                ],
+                tolerations=[client.V1Toleration(**t) for t in self.tolerations],
                 node_selector=self.node_selector,
                 volumes=volumes,
                 restart_policy="Never",
