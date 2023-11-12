@@ -8,7 +8,11 @@
 #
 # NOTE: If the image version is updated, also update it in ci/refreeze!
 #
-FROM python:3.11-bullseye as build-stage
+
+######################################################################
+# The BinderHub wheel is pure Python so can be built for any platform
+# on the native architecture (avoiding QEMU emulation)
+FROM --platform=${BUILDPLATFORM:-linux/amd64} python:3.11-bullseye as build-stage
 
 # install node as required to build a binderhub wheel
 RUN echo "deb https://deb.nodesource.com/node_18.x bullseye main" > /etc/apt/sources.list.d/nodesource.list \
