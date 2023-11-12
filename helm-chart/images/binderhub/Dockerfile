@@ -30,7 +30,7 @@ RUN apt-get update \
 #
 COPY . .
 ARG PIP_CACHE_DIR=/tmp/pip-cache
-RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
+RUN --mount=type=cache,target=${PIP_CACHE_DIR},z \
     pip install build \
  && pip wheel --wheel-dir=/tmp/wheels \
         -r helm-chart/images/binderhub/requirements.txt \
@@ -63,7 +63,7 @@ RUN apt-get update \
 # install wheels built in the build stage
 COPY helm-chart/images/binderhub/requirements.txt /tmp/requirements.txt
 ARG PIP_CACHE_DIR=/tmp/pip-cache
-RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
+RUN --mount=type=cache,target=${PIP_CACHE_DIR},z \
     --mount=type=cache,from=build-stage,source=/tmp/wheels,target=/tmp/wheels \
     pip install --find-links=/tmp/wheels/ \
         -r /tmp/requirements.txt \
