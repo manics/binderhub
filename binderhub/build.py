@@ -455,15 +455,10 @@ class KubernetesBuildExecutor(BuildExecutor):
 
         return volumes, volume_mounts
 
-    def submit(self):
+    def get_env(self):
         """
-        Submit a build pod to create the image for the repository.
-
-        Progress of the build can be monitored by listening for items in
-        the Queue passed to the constructor as `q`.
+        Get the Kubernetes environment variables for the build pod.
         """
-        volumes, volume_mounts = self.get_builder_volumes()
-
         env = [
             client.V1EnvVar(name=key, value=value)
             for key, value in self.extra_envs.items()
@@ -472,7 +467,6 @@ class KubernetesBuildExecutor(BuildExecutor):
             env.append(
                 client.V1EnvVar(name="GIT_CREDENTIAL_ENV", value=self.git_credentials)
             )
-
         if self.registry_credentials:
             env.append(
                 client.V1EnvVar(
@@ -480,8 +474,16 @@ class KubernetesBuildExecutor(BuildExecutor):
                     value=json.dumps(self.registry_credentials),
                 )
             )
+        return env
 
-        self.pod = client.V1Pod(
+    def make_pod(self):
+        """
+        Make a Kubernetes pod specification for the build pod.
+        """
+        volumes, volume_mounts = self.get_builder_volumes()
+        env = self.get_env()
+
+        pod = client.V1Pod(
             metadata=client.V1ObjectMeta(
                 name=self.name,
                 labels={
@@ -528,6 +530,16 @@ class KubernetesBuildExecutor(BuildExecutor):
                 affinity=self.get_affinity(),
             ),
         )
+        return pod
+
+    def submit(self):
+        """
+        Submit a build pod to create the image for the repository.
+
+        Progress of the build can be monitored by listening for items in
+        the Queue passed to the constructor as `q`.
+        """
+        self.pod = self.make_pod()
 
         try:
             _ = self.api.create_namespaced_pod(
