@@ -20,7 +20,7 @@ FROM python:3.11-bullseye as build-stage
 # in the top-level dist directory
 COPY helm-chart/images/binderhub/requirements.txt ./
 COPY dist .
-ARG PIP_CACHE_DIR=/tmp/pip-cache
+ARG PIP_CACHE_DIR=/tmp/pip-cache,z
 RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
     pip install build \
  && pip wheel --wheel-dir=/tmp/wheels \
@@ -53,7 +53,7 @@ RUN apt-get update \
 
 # install wheels built in the build stage
 COPY helm-chart/images/binderhub/requirements.txt /tmp/requirements.txt
-ARG PIP_CACHE_DIR=/tmp/pip-cache
+ARG PIP_CACHE_DIR=/tmp/pip-cache,z
 RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
     --mount=type=cache,from=build-stage,source=/tmp/wheels,target=/tmp/wheels \
     pip install --no-deps /tmp/wheels/* \
