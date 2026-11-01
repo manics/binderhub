@@ -47,7 +47,8 @@ async def test_auth(app, path, authenticated, use_session):
     assert "/hub/login" in urlparse(r.url).path
 
     # acquire a _xsrf cookie to pass in the post request we are about to make
-    login_url = f"{app.hub_url}/hub/login"
+    # hub_url should already end in /
+    login_url = f"{app.hub_url}hub/login"
     r2 = await async_requests.get(login_url)
     assert r2.status_code == 200, f"{r2.status_code} {r2.url}"
     _xsrf_cookie = r2.cookies.get("_xsrf", path="/hub/")
