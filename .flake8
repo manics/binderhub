@@ -13,4 +13,4 @@ extend-ignore = C, E, W
 
 # Adjustments to linting the binderhub repo
 builtins = c, load_subconfig
-exclude = versioneer.py,binderhub/_version.py
+exclude = binderhub/_version.py

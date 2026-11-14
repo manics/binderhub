@@ -1,10 +1,68 @@
 [build-system]
 requires = [
-  "jupyter-packaging >= 0.10",
-  "setuptools >= 40.9.0",
-  "wheel",
+  "hatchling",
+  "hatch-vcs",
+  "hatch-jupyter-builder>=0.10",
+  "hatch-requirements-txt",
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "hatchling.build"
+
+[project]
+name = "binderhub"
+dynamic = ["version", "dependencies"]
+description = "Turn a Git repo into a collection of interactive notebooks"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "BSD" }
+authors = [
+  { name = "Project Jupyter Contributors", email = "jupyter@googlegroups.com" },
+]
+keywords = ["reproducible", "science", "environments", "docker", "kubernetes"]
+
+[project.urls]
+Homepage = "https://binderhub.readthedocs.io/en/latest/"
+Documentation = "https://binderhub.readthedocs.io/en/latest/"
+Funding = "https://jupyter.org/about"
+Source = "https://github.com/jupyterhub/binderhub/"
+Tracker = "https://github.com/jupyterhub/binderhub/issues"
+
+[project.optional-dependencies]
+# pycurl is an optional dependency which improves performance
+#
+# - pycurl requires both `curl-config` and `gcc` to be available when
+#   installing it from source.
+# - pycurl should always be used in production, but it's not relevant
+#   for building documentation which inspects the source code.
+#
+pycurl = ["pycurl"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
+
+[tool.hatch.build]
+artifacts = [
+  "binderhub/static/dist/**",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["binderhub"]
+
+[tool.hatch.build.hooks.vcs]
+version-file = "binderhub/_version.py"
+
+# https://hatch-jupyter-builder.readthedocs.io/en/stable/source/reference/api/hatch_jupyter_builder.html#hatch_jupyter_builder.utils.npm_builder
+[tool.hatch.build.hooks.jupyter-builder]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = ["binderhub/static/dist/bundle.js"]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+build_cmd = "webpack"
+build_dir = "binderhub/static/dist/"
+source_dir = "binderhub/static/js/"
+npm = ["npm"]
 
 
 # black is used for autoformatting Python code
@@ -36,6 +94,5 @@ timeout = "60"
 omit = [
   "binderhub/tests/*",
   "binderhub/_version.py",
-  "versioneer.py",
 ]
 parallel = true

@@ -424,7 +424,7 @@ jobs:
       - name: Update pip
         run: |
           pip install --upgrade pip
-          pip install --upgrade setuptools wheel
+          pip install --upgrade build
 
       - name: Setup Python package dependencies
         # FIXME: We do "pip install ." before "pip install -e ." to ensure
